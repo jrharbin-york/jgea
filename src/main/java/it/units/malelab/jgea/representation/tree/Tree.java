@@ -64,7 +64,7 @@ public class Tree<C> implements Serializable, Sized, Iterable<Tree<C>> {
     return t;
   }
 
-  private Tree(C content, Tree<C> parent) {
+  public Tree(C content, Tree<C> parent) {
     this.content = content;
     this.parent = parent;
   }
@@ -177,7 +177,18 @@ public class Tree<C> implements Serializable, Sized, Iterable<Tree<C>> {
   public void prettyPrint(PrintStream ps) {
     prettyPrint(this, 0, ps);
   }
+  
+  public void prettyPrintLine(PrintStream ps) {
+	    prettyPrintLine(this, 0, ps);
+	  }
 
+  private static <K> void prettyPrintLine(Tree<K> t, int d, PrintStream ps) {
+	  if (t.nChildren() == 0) {
+	    ps.printf("%s", t.content());
+	  }
+    t.forEach(c -> prettyPrintLine(c, d + 1, ps));
+  }
+  
   private static <K> void prettyPrint(Tree<K> t, int d, PrintStream ps) {
     ps.printf("%s (h=%2d d=%2d #c=%2d) %s",
         Collections.nCopies(d, "  ").stream().collect(Collectors.joining()),

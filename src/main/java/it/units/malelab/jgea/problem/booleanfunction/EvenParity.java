@@ -34,65 +34,62 @@ import java.util.function.Function;
  */
 public class EvenParity implements GrammarBasedProblem<String, List<Tree<Element>>, Double> {
 
-  private static class TargetFunction implements BooleanFunctionFitness.TargetFunction {
+	public static class TargetFunction implements BooleanFunctionFitness.TargetFunction {
 
-    private final String[] varNames;
+		private final String[] varNames;
 
-    public TargetFunction(int size) {
-      varNames = new String[size];
-      for (int i = 0; i < size; i++) {
-        varNames[i] = "b" + i;
-      }
-    }
+		public TargetFunction(int size) {
+			varNames = new String[size];
+			for (int i = 0; i < size; i++) {
+				varNames[i] = "b" + i;
+			}
+		}
 
-    @Override
-    public boolean[] apply(boolean[] arguments) {
-      int count = 0;
-      for (boolean argument : arguments) {
-        count = count + (argument ? 1 : 0);
-      }
-      return new boolean[]{(count % 2) == 1};
-    }
+		@Override
+		public boolean[] apply(boolean[] arguments) {
+			int count = 0;
+			for (boolean argument : arguments) {
+				count = count + (argument ? 1 : 0);
+			}
+			return new boolean[] { (count % 2) == 1 };
+		}
 
-    @Override
-    public String[] varNames() {
-      return varNames;
-    }
+		@Override
+		public String[] varNames() {
+			return varNames;
+		}
+	}
 
-  }
+	public EvenParity(final int size) throws IOException {
+		grammar = Grammar.fromFile(new File("grammars/boolean-parity-var.bnf"));
+		List<List<String>> vars = new ArrayList<>();
+		for (int i = 0; i < size; i++) {
+			vars.add(Collections.singletonList("b" + i));
+		}
+		grammar.getRules().put("<v>", vars);
+		solutionMapper = new FormulaMapper();
+		TargetFunction targetFunction = new TargetFunction(size);
+		fitnessFunction = new BooleanFunctionFitness(targetFunction,
+				BooleanUtils.buildCompleteObservations(targetFunction.varNames));
+	}
 
-  private final Grammar<String> grammar;
-  private final Function<Tree<String>, List<Tree<Element>>> solutionMapper;
-  private final Function<List<Tree<Element>>, Double> fitnessFunction;
+	private final Grammar<String> grammar;
+	private final Function<Tree<String>, List<Tree<Element>>> solutionMapper;
+	private final Function<List<Tree<Element>>, Double> fitnessFunction;
 
-  public EvenParity(final int size) throws IOException {
-    grammar = Grammar.fromFile(new File("grammars/boolean-parity-var.bnf"));
-    List<List<String>> vars = new ArrayList<>();
-    for (int i = 0; i < size; i++) {
-      vars.add(Collections.singletonList("b" + i));
-    }
-    grammar.getRules().put("<v>", vars);
-    solutionMapper = new FormulaMapper();
-    TargetFunction targetFunction = new TargetFunction(size);
-    fitnessFunction = new BooleanFunctionFitness(
-        targetFunction,
-        BooleanUtils.buildCompleteObservations(targetFunction.varNames)
-    );
-  }
+	@Override
+	public Grammar<String> getGrammar() {
+		return grammar;
+	}
 
-  @Override
-  public Grammar<String> getGrammar() {
-    return grammar;
-  }
+	@Override
+	public Function<Tree<String>, List<Tree<Element>>> getSolutionMapper() {
+		return solutionMapper;
+	}
 
-  @Override
-  public Function<Tree<String>, List<Tree<Element>>> getSolutionMapper() {
-    return solutionMapper;
-  }
-
-  @Override
-  public Function<List<Tree<Element>>, Double> getFitnessFunction() {
-    return fitnessFunction;
-  }
+	@Override
+	public Function<List<Tree<Element>>, Double> getFitnessFunction() {
+		return fitnessFunction;
+	}
 
 }

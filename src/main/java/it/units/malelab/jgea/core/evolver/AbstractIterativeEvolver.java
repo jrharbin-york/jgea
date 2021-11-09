@@ -56,6 +56,12 @@ public abstract class AbstractIterativeEvolver<G, S, F> implements Evolver<G, S,
     State state = initState();
     Stopwatch stopwatch = Stopwatch.createStarted();
     Collection<Individual<G, S, F>> population = initPopulation(fitnessFunction, random, executor, state);
+    
+    for (Individual<G,S,F> element : population) {
+    	G g = element.getGenotype();
+    	System.out.println("Genotype: = " + g);
+    }
+    
     L.fine(String.format("Population initialized: %d individuals", population.size()));
     while (true) {
       PartiallyOrderedCollection<Individual<G, S, F>> orderedPopulation = new DAGPartiallyOrderedCollection<>(population, individualComparator);

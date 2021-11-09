@@ -23,6 +23,8 @@ import java.util.Random;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import it.units.malelab.jgea.representation.tree.Tree;
+
 /**
  * @author eric
  */
@@ -30,7 +32,7 @@ import java.util.stream.Collectors;
 public interface Factory<T> {
 
   List<T> build(int n, Random random);
-
+  
   default Factory<T> withOptimisticUniqueness(int maxAttempts) {
     Factory<T> innerFactory = this;
     return new Factory<T>() {
@@ -59,5 +61,7 @@ public interface Factory<T> {
         .map(f::apply)
         .collect(Collectors.toList());
   }
+
+   
 
 }
